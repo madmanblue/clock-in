@@ -72,6 +72,22 @@ package com.madman.doc.distributed;
  *  observing：同步leader状态，不参与投票
  *
  * zookeeper选主
+ *  开始选举阶段，先获取自己的zxid
+ *  第一轮投票都投给自己，投票信息包含：所选举的serverid，zxid，epoch，epoch随着选举的增加而递增
+ *  接收到投票信息后
+ *    首先判断epoch的值，
+ *     如果收到的epoch比自己的大，更新自己的epoch，同时清空本轮逻辑时钟收集到的来自其他server的
+ *     选举数据。然后判断是否需要更新当前自己的选举leader serverid，判断规则是，先看zxid的大小，在判断leader serverid
+ *     ，然后将自身最新的选举结果广播，即 leaderserverid， zxid， epoch
+ *     如果收到的epoch小与当前的epoch，直接将当前的leader serverid ， zxid， epoch发过去
+ *     如果收到的epoch相等，判断zxid和leader serverid的大小，然后再将数据广播
+ *    然后判断是否收到了所有的投票
+ *     如果是，判断当前的节点是leader还是follower
+ *     如果不是，判断自己选举的leader是不是得到超过半数以上的投票，如果是，尝试在200ms接受下数据，如果没有收到
+ *     ，说明已经选出leader ， 设置当前节点为follower
+ *
+ *
+ *
  *
  * zookeeper同步
  *
@@ -81,7 +97,13 @@ package com.madman.doc.distributed;
  *  当新生成proposal时，会向其他的server发出事务执行请求，如果超过半数的机器都能执行且成功，那么就开始执行。
  *
  *
+ * zookeeper的watch机制
+ *  注册watcher getData() exists() getChildren()
+ *  触发watcher delete() create() setData()
  *
+ *  setData成功会触发getData
+ *  create触发exists，getchildren
+ *  delete触发exists，getchildren
  *
  *
  *
