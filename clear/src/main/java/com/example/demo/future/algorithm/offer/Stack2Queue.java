@@ -1,10 +1,10 @@
 package com.example.demo.future.algorithm.offer;
 
-
+import java.util.ArrayList;
 import java.util.Stack;
 
 public class Stack2Queue {
-    Stack<Integer> queue , tmp;
+    Stack<Integer> queue, tmp;
 
     public Stack2Queue() {
         queue = new Stack<>();
@@ -28,6 +28,12 @@ public class Stack2Queue {
                 queue.push(tmp.pop());
             }
             return i;
+        }
+    }
+
+    public static void main(String[] args) {
+        while (true) {
+            new ArrayList<>(10240);
         }
     }
 }
